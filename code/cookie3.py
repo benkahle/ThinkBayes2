@@ -28,7 +28,6 @@ class Cookie(Suite):
         like = mix[data]
         return like
 
-
 def main():
     hypos = ['Bowl 1', 'Bowl 2']
 
