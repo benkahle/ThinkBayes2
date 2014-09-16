@@ -69,9 +69,9 @@ def main():
 
   pmf = Cookie(hypos, bowls)
 
-  pmf.Update('vanilla')
-  pmf.Update('chocolate')
-  pmf.Update('chocolate')
+  data = ['chocolate'] * 11;
+  for datum in data:
+    pmf.Update(datum)
 
   for hypo, prob in pmf.Items():
     print(hypo, prob)
