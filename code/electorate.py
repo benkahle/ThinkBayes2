@@ -21,9 +21,11 @@ class Electorate(thinkbayes2.Suite):
         hypo: 
         data: 
         """
-        like = 1
+        actual = hypo
+        mean, std, measurement = data
+        error = measurement - actual
+        like = thinkbayes2.EvalNormalPdf(error, mean, std)
         return like
-
 
 def main():
     hypos = numpy.linspace(0, 100, 101)
@@ -32,9 +34,20 @@ def main():
     thinkplot.Pdf(suite, label='prior')
 
     data = 1.1, 3.7, 53
+    data2 = -2.3, 4.1 ,49
     suite.Update(data)
-
+    print(suite.Mean())
+    print(suite.Std())
+    print(suite.CredibleInterval())
+    print(suite.ProbLess(50))
     thinkplot.Pdf(suite, label='posterior')
+    suite.Update(data2)
+    print(suite.Mean())
+    print(suite.Std())
+    print(suite.CredibleInterval())
+    print(suite.ProbLess(50))
+    thinkplot.Pdf(suite, label='posterior2')
+
     thinkplot.Show()
 
 
