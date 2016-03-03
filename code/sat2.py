@@ -22,9 +22,11 @@ class Sat(thinkbayes2.Suite, thinkbayes2.Joint):
         data: boolean, whether the answer is correct
         hypo: pair of (efficacy, difficulty)
         """
-        # TODO: fill this in
-        like = 1
-        return like
+        e, d = hypo
+        if data:
+            return ProbCorrect(e, d)
+        else:
+            return 1-ProbCorrect(e, d)
 
 
 def ProbCorrect(efficacy, difficulty, a=1):
@@ -47,8 +49,10 @@ def Update(p, q, correct):
 
     returns: pair of new Pmfs
     """
-    # TODO: fill this in
-    # HINT: form a joint distribution, update it, then extract marginals
+    joint = thinkbayes2.MakeJoint(p, q)
+    joint.update(correct)
+    p = joint.marginal(0)
+    q = joint.marginal(1)
     return p, q
 
 

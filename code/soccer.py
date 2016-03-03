@@ -18,10 +18,12 @@ class Soccer(thinkbayes2.Suite):
     def Likelihood(self, data, hypo):
         """Computes the likelihood of the data under the hypothesis.
 
-        hypo: 
-        data: 
+        hypo: hypothetical goal-scoring rate in goals per game
+        data: time between goals in minutes
         """
-        like = 1
+        x = data
+        lam = hypo / 90
+        like = thinkbayes2.EvalExponentialPdf(x,lam)
         return like
 
     def PredRemaining(self, rem_time, score):
@@ -30,8 +32,16 @@ class Soccer(thinkbayes2.Suite):
         rem_time: remaining time in the game in minutes
         score: number of goals already scored
         """
-        # TODO: fill this in
-
+        metapmf = thinkbayes2.Pmf()
+        for lam, prob in self.Items():
+            lt = lam*rem_time/90
+            pmf = thinkbayes2.MakePoissonPmf(lt,12)
+            #thinkplot.Pdf(pmf, linewidth=.5, alpha=.2, color='purple')
+            metapmf[pmf] = prob
+        mix = thinkbayes2.MakeMixture(metapmf)
+        mix += score
+        thinkplot.Hist(mix)    
+        thinkplot.Show()
 
 def main():
     hypos = numpy.linspace(0, 12, 201)
@@ -40,11 +50,21 @@ def main():
     thinkplot.Pdf(suite, label='prior')
     print('prior mean', suite.Mean())
 
+    #construct a prior using pseudo-observation
+    suite.Update(69)
+    thinkplot.Pdf(suite, label='prior 2')
+    print('after one goal', suite.Mean())
+
+    #update with real data
     suite.Update(11)
     thinkplot.Pdf(suite, label='posterior 1')
     print('after one goal', suite.Mean())
+    suite.Update(12)
+    thinkplot.Pdf(suite, label='posterior 2')
+    print('after two goals', suite.Mean())
 
     thinkplot.Show()
+    suite.PredRemaining(67, 2);
 
 
 if __name__ == '__main__':

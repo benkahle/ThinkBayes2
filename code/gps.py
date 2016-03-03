@@ -23,9 +23,13 @@ class Gps(thinkbayes2.Suite, thinkbayes2.Joint):
         hypo: 
         data: 
         """
-        # TODO: fill this in
-        like = 1
-        return like
+        actualX, actualY = hypo
+        measuredX, measuredY = data 
+        errorX = measuredX - actualX
+        errorY = measuredY - actualY
+        like1 = thinkbayes2.EvalNormalPdf(errorX, 0, 30)
+        like2 = thinkbayes2.EvalNormalPdf(errorY, 0, 30)
+        return like1 * like2
 
 
 def main():
@@ -47,6 +51,12 @@ def main():
     joint.UpdateSet(pairs)
 
     # TODO: plot the marginals and print the posterior means
+    postX = joint.Marginal(0, label="x")
+    postY = joint.Marginal(1, label="y")
+
+    thinkplot.PrePlot(2)
+    thinkplot.Pdfs([postX, postY])
+    thinkplot.Show()
 
 
 if __name__ == '__main__':
